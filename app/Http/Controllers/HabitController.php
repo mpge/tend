@@ -11,6 +11,7 @@ use App\Support\HabitPresenter;
 use Carbon\CarbonImmutable;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -88,13 +89,15 @@ class HabitController extends Controller
 
         /** @var array{ids: array<int, int>} $validated */
         $validated = $request->validate([
-            'ids' => ['required', 'array'],
-            'ids.*' => ['integer'],
+            'ids' => ['required', 'array', 'max:500'],
+            'ids.*' => ['integer', 'distinct'],
         ]);
 
-        foreach (array_values($validated['ids']) as $position => $id) {
-            $user->habits()->whereKey($id)->update(['position' => $position]);
-        }
+        DB::transaction(function () use ($user, $validated): void {
+            foreach (array_values($validated['ids']) as $position => $id) {
+                $user->habits()->whereKey($id)->update(['position' => $position]);
+            }
+        });
 
         return back();
     }

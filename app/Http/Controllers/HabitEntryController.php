@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Habit;
 use Carbon\CarbonImmutable;
+use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -19,7 +20,7 @@ class HabitEntryController extends Controller
 
         /** @var array{date?: string|null} $validated */
         $validated = $request->validate([
-            'date' => ['nullable', 'date'],
+            'date' => ['nullable', 'date', 'before_or_equal:today'],
         ]);
 
         $date = isset($validated['date'])
@@ -30,8 +31,14 @@ class HabitEntryController extends Controller
 
         if ($existing !== null) {
             $existing->delete();
-        } else {
+
+            return back();
+        }
+
+        try {
             $habit->entries()->create(['entry_date' => $date]);
+        } catch (UniqueConstraintViolationException) {
+            // A concurrent request already created this entry; the day is done, so no-op.
         }
 
         return back();

@@ -22,7 +22,7 @@ class UpdateHabitRequest extends FormRequest
             'name' => ['sometimes', 'required', 'string', 'max:255'],
             'cadence' => ['sometimes', Rule::enum(HabitCadence::class)],
             'target_per_period' => ['sometimes', 'integer', 'min:1', 'max:50'],
-            'color' => ['sometimes', 'string', 'max:9'],
+            'color' => ['sometimes', 'string', 'regex:/^#(?:[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/'],
             'icon' => ['nullable', 'string', 'max:50'],
             'is_active' => ['sometimes', 'boolean'],
         ];
