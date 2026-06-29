@@ -1,0 +1,27 @@
+# Local Postgres for development.
+#
+# The Laravel app and Vite run on the host (`composer dev`); only the database
+# lives in Docker. Tests use in-memory SQLite, so this is needed for running the
+# app locally, not for the test suite.
+#
+#   docker compose up -d        # start Postgres
+#   docker compose down         # stop it (data persists in the named volume)
+services:
+    pgsql:
+        image: 'postgres:18-alpine'
+        ports:
+            - '${FORWARD_DB_PORT:-55435}:5432'
+        environment:
+            POSTGRES_DB: '${DB_DATABASE:-taskmanager}'
+            POSTGRES_USER: '${DB_USERNAME:-sail}'
+            POSTGRES_PASSWORD: '${DB_PASSWORD:-password}'
+        volumes:
+            - 'taskmanager-pgsql:/var/lib/postgresql'
+        healthcheck:
+            test: ['CMD', 'pg_isready', '-q', '-d', '${DB_DATABASE:-taskmanager}', '-U', '${DB_USERNAME:-sail}']
+            retries: 3
+            timeout: 5s
+
+volumes:
+    taskmanager-pgsql:
+        driver: local
