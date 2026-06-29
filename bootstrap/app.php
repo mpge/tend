@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\EnsureEmailVerifiedWhenRequired;
 use App\Http\Middleware\HandleAppearance;
 use App\Http\Middleware\HandleInertiaRequests;
 use App\Http\Middleware\SecurityHeaders;
@@ -17,6 +18,9 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->encryptCookies(except: ['appearance', 'sidebar_state']);
+
+        // Email verification is only enforced when require_email_verification is on.
+        $middleware->alias(['verified' => EnsureEmailVerifiedWhenRequired::class]);
 
         $middleware->web(append: [
             HandleAppearance::class,

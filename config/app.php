@@ -17,6 +17,19 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Require Email Verification
+    |--------------------------------------------------------------------------
+    |
+    | When true, users must verify their email before using the app (enforced
+    | by the EnsureEmailVerifiedWhenRequired middleware). Off by default so
+    | self-hosting stays frictionless; the hosted plan enables it with mail set.
+    |
+    */
+
+    'require_email_verification' => env('REQUIRE_EMAIL_VERIFICATION', false),
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Environment
     |--------------------------------------------------------------------------
     |
