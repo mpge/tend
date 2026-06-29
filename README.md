@@ -1,5 +1,8 @@
 <p align="center">
-  <img src="public/tend-logo.png" alt="Tend — habit tracker & todo list" width="260">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="public/tend-logo-dark.png">
+    <img src="public/tend-logo.png" alt="Tend — habit tracker & todo list" width="260">
+  </picture>
 </p>
 
 <h1 align="center">Tend</h1>
@@ -24,6 +27,35 @@
   overloaded Important lane, at-risk streaks, and a suggested focus for the day.
 - **Self-hostable** — multi-user auth out of the box (login, registration,
   password reset, 2FA, passkeys).
+
+## 📸 Screenshots
+
+> Screenshots are auto-generated from the seeded demo account by the
+> [screenshots](.github/workflows/screenshots.yml) workflow.
+
+<p align="center">
+  <img src="docs/assets/tend_today_dark.png" alt="Tend — Today dashboard with greeting, insights, focus tasks, and today's habits (dark mode)" width="800" />
+</p>
+
+<p align="center">
+  <img src="docs/assets/tend_tasks_dark.png" alt="Tend — Tasks board with Important and Eventual lanes, quick-add, priorities, and due dates (dark mode)" width="800" />
+</p>
+
+<p align="center">
+  <img src="docs/assets/tend_habits_dark.png" alt="Tend — Habits page with one-tap check-in, streaks, and contribution-style grids (dark mode)" width="800" />
+</p>
+
+<p align="center">
+  <img src="docs/assets/tend_today_light.png" alt="Tend — Today dashboard in light mode" width="800" />
+</p>
+
+## Hosting
+
+Tend is free and open source — self-host it anywhere PHP and Postgres run.
+
+Prefer not to run a server? A managed, always-up hosted option is in the works
+for a small monthly fee, as a convenience alternative to self-hosting. (Link
+coming soon.)
 
 ## Tech stack
 

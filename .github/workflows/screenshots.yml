@@ -1,0 +1,97 @@
+name: screenshots
+
+# Regenerates the demo screenshots in docs/assets used by the README.
+# Runs on demand, or when the UI changes on main. The generated PNGs are
+# committed back with [skip ci]; they live outside the trigger paths so the
+# commit does not retrigger this workflow.
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'resources/js/**'
+      - 'resources/css/**'
+      - 'app/**'
+      - 'database/seeders/**'
+      - 'scripts/screenshots.cjs'
+
+permissions:
+  contents: write
+
+jobs:
+  screenshots:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:18-alpine
+        env:
+          POSTGRES_DB: taskmanager
+          POSTGRES_USER: sail
+          POSTGRES_PASSWORD: password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -q -d taskmanager -U sail"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+
+    env:
+      DB_CONNECTION: pgsql
+      DB_HOST: 127.0.0.1
+      DB_PORT: 5432
+      DB_DATABASE: taskmanager
+      DB_USERNAME: sail
+      DB_PASSWORD: password
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          tools: composer:v2
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        run: |
+          composer install --no-interaction --prefer-dist --optimize-autoloader
+          npm ci
+          npm install puppeteer-core --no-save
+
+      - name: Build assets
+        run: npm run build
+
+      - name: Prepare app
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+          php artisan migrate --seed --force
+
+      - name: Resolve Chrome
+        run: echo "CHROME_PATH=$(which google-chrome || which google-chrome-stable || which chromium-browser)" >> "$GITHUB_ENV"
+
+      - name: Serve app
+        run: |
+          php artisan serve --host=127.0.0.1 --port=8000 &
+          for i in $(seq 1 30); do
+            curl -sf http://127.0.0.1:8000/login > /dev/null && break
+            sleep 1
+          done
+
+      - name: Capture screenshots
+        env:
+          SHOT_BASE: http://127.0.0.1:8000
+          SHOT_OUT: docs/assets
+        run: node scripts/screenshots.cjs
+
+      - name: Commit screenshots
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: 'chore: refresh demo screenshots [skip ci]'
+          file_pattern: 'docs/assets/*.png'
