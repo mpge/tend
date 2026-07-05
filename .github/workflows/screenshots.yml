@@ -45,7 +45,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -54,7 +54,7 @@ jobs:
           tools: composer:v2
 
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: '22'
 
@@ -91,7 +91,7 @@ jobs:
         run: node scripts/screenshots.cjs
 
       - name: Commit screenshots
-        uses: stefanzweifel/git-auto-commit-action@v5
+        uses: stefanzweifel/git-auto-commit-action@v7.1.0
         with:
           commit_message: 'chore: refresh demo screenshots [skip ci]'
           file_pattern: 'docs/assets/*.png'
