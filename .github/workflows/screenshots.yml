@@ -91,7 +91,7 @@ jobs:
         run: node scripts/screenshots.cjs
 
       - name: Commit screenshots
-        uses: stefanzweifel/git-auto-commit-action@v7.1.0
+        uses: stefanzweifel/git-auto-commit-action@v7.2.0
         with:
           commit_message: 'chore: refresh demo screenshots [skip ci]'
           file_pattern: 'docs/assets/*.png'
